@@ -54,6 +54,15 @@ contract Voting is Ownable {
         return results;
     }
 
+    function getPoliticalParties() external view returns (PoliticalParty[] memory) {
+        PoliticalParty[] memory parties = new PoliticalParty[](politicalParties.length);
+
+        for (uint256 i = 0; i < politicalParties.length; i++)
+            parties[i] = politicalParties[i];
+
+        return parties;
+    }
+
     function addParty(
         string memory _name,
         string memory _symbol,
