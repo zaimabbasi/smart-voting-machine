@@ -10,9 +10,11 @@ const App = () => {
     const [web3, setWeb3] = React.useState(null);
     const [politicalParties, setPoliticalParties] = React.useState([]);
 
+    // gets called on loading the page
     React.useEffect(() => {
         startApp();
 
+        // to remove attached web3 provider listeners
         return () => {
             if (web3) {
                 web3.currentProvider.removeListener("accountsChanged");
@@ -21,6 +23,12 @@ const App = () => {
         };
     }, []);
 
+    // - this method is the starting point for app
+    // - here we detect if there is an ethereum provider in the browser i-e metamask
+    // - if found, we initiate an instance of web3, load the contract and attach callbacks to web3
+    //   provider, we also check if the selected network is where the contract was deployed
+    // - if there is no provider found, the app will not function
+    //
     const startApp = async () => {
         // detect if there is an ethereum provider in the browser
         const provider = await detectEthereumProvider();
@@ -28,11 +36,12 @@ const App = () => {
         if (provider) {
             // create a web3 instance
             const web3 = new Web3(provider);
+            // set web3 as a state
             setWeb3(web3);
 
-            // get the currenct network id
+            // get the current network id
             const networkId = await web3.eth.net.getId();
-            // load contract data for that netork id
+            // load contract data for that network id
             const contractData = Voting.networks[networkId];
 
             // check if the contract is deployed on that network
@@ -59,10 +68,11 @@ const App = () => {
         }
     };
 
+    // - this function makes a call to the blockchain and gets some data back
     const loadBlockchainData = async (account) => {
-        // check if the selected network id is valid for deployed contract
+        // check if the contract has an instance
         if (contract) {
-            // load blockchain data for the account
+            // make a call to the smart contract and read some data
             const politicalParties = await contract.methods
                 .getPoliticalParties()
                 .call({ from: account });
@@ -72,6 +82,10 @@ const App = () => {
         }
     };
 
+    // - will only be called when user presses connect wallet button
+    //   and it will request the wallet to connect an account
+    // - if user allows to connect with an account, it will return an array of accounts
+    //   and we select 0th index account in that array
     const handleConnectWallet = () => {
         web3.currentProvider
             .request({ method: "eth_requestAccounts" })
@@ -81,12 +95,14 @@ const App = () => {
             });
     };
 
+    // - gets called everytime user switches an account
     const handleAccountsChanged = (accounts) => {
+        // check if got have some accounts
         if (accounts.length > 0) {
-            // set the first index account
+            // set the 0th index account
             setAccount(accounts[0]);
 
-            // load account data from blockchain
+            // load data for that account
             loadBlockchainData(accounts[0]);
         } else {
             console.log("wallet is either locked or no accounts are present");
@@ -94,6 +110,7 @@ const App = () => {
         }
     };
 
+    // - gets called if user changes network from wallet, so we need to reload our app
     const handleChainChanged = (chainId) => {
         window.location.reload();
     };
