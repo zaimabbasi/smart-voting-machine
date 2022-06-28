@@ -7,24 +7,21 @@ contract Voting is Ownable {
     struct PoliticalParty {
         string name;
         string symbol;
-        string flagUrl;
-        string imageUrl;
     }
 
-    PoliticalParty[] public politicalParties;
-    uint256 public startTime;
-    uint256 public endTime;
-    mapping(uint256 => uint256) partyVoteCount;
-    mapping(address => bool) citizenVoted;
-    mapping(address => uint256) citizenVotedParty;
+    PoliticalParty[] politicalParties;
+    uint32 public startTime;
+    uint32 public endTime;
+    mapping(uint8 => uint256) partyVoteCount;
+    mapping(address => uint8) citizenVotedParty;
 
-    constructor(uint256 _startTime, uint256 _endTime) {
+    constructor(uint32 _startTime, uint32 _endTime) {
         startTime = _startTime;
         endTime = _endTime;
     }
 
     modifier onlyOnce {
-        require(citizenVoted[msg.sender] == false, "Can vote only once!");
+        require(getCitizenVote() == 0, "Can vote only once!");
         _;
     }
 
@@ -34,8 +31,8 @@ contract Voting is Ownable {
         _;
     }
 
-    modifier validPartyId(uint256 _partyId) {
-        require(_partyId < politicalParties.length, "Party ID is invalid!");
+    modifier validPartyId(uint8 _partyId) {
+        require(_partyId > 0 && _partyId <= politicalParties.length, "Party ID is invalid!");
         _;
     }
 
@@ -45,11 +42,15 @@ contract Voting is Ownable {
         _;
     }
 
-    function viewResults() external view votingComplete returns (uint256[] memory) {
+    function getCitizenVote() public view returns (uint8) {
+        return citizenVotedParty[msg.sender];
+    }
+
+    function getResults() external view votingComplete returns (uint256[] memory) {
         uint256[] memory results = new uint256[](politicalParties.length);
 
-        for (uint256 i = 0; i < politicalParties.length; i++)
-            results[i] = partyVoteCount[i];
+        for (uint8 i = 1; i <= politicalParties.length; i++)
+            results[i-1] = partyVoteCount[i];
 
         return results;
     }
@@ -57,7 +58,7 @@ contract Voting is Ownable {
     function getPoliticalParties() external view returns (PoliticalParty[] memory) {
         PoliticalParty[] memory parties = new PoliticalParty[](politicalParties.length);
 
-        for (uint256 i = 0; i < politicalParties.length; i++)
+        for (uint8 i = 0; i < politicalParties.length; i++)
             parties[i] = politicalParties[i];
 
         return parties;
@@ -65,20 +66,17 @@ contract Voting is Ownable {
 
     function addParty(
         string memory _name,
-        string memory _symbol,
-        string memory _flagUrl,
-        string memory _imageUrl
+        string memory _symbol
     )
         external
         onlyOwner
     {
-        PoliticalParty memory party = PoliticalParty(_name, _symbol, _flagUrl, _imageUrl);
+        PoliticalParty memory party = PoliticalParty(_name, _symbol);
         politicalParties.push(party);
     }
 
-    function vote(uint256 _partyId) external validPartyId(_partyId) whileVoting onlyOnce {
+    function vote(uint8 _partyId) external validPartyId(_partyId) whileVoting onlyOnce {
         partyVoteCount[_partyId]++;
         citizenVotedParty[msg.sender] = _partyId;
-        citizenVoted[msg.sender] = true;
     }
 }
