@@ -3,48 +3,48 @@ const parties = [
     {
         name: "Pakistan Tehreek-e-Insaf",
         symbol: "PTI",
-        flagUrl: "",
-        imageUrl: "",
+    },
+    {
+        name: "Awami Muslim League",
+        symbol: "AML",
     },
     {
         name: "Awami National Party",
         symbol: "ANP",
-        flagUrl: "",
-        imageUrl: "",
+    },
+    {
+        name: "Jamaat-e-Islami",
+        symbol: "JI",
+    },
+    {
+        name: "Jamiat Ulema-e-Islam",
+        symbol: "JUI",
     },
     {
         name: "Pakistan Muslim League-Quaid",
-        symbol: "PML-Q",
-        flagUrl: "",
-        imageUrl: "",
+        symbol: "PMLQ",
     },
     {
         name: "Muttahida Qaumi Movement",
         symbol: "MQM",
-        flagUrl: "",
-        imageUrl: "",
     },
     {
         name: "Pakistan People’s Party",
         symbol: "PPP",
-        flagUrl: "",
-        imageUrl: "",
     },
     {
         name: "Pakistan Muslim League-Nawaz",
-        symbol: "PML-N",
-        flagUrl: "",
-        imageUrl: "",
+        symbol: "PMLN",
     },
 ];
 
-const startTime = Math.floor(new Date("2022-05-22T00:00:00Z").getTime() / 1000);
-const endTime = Math.floor(new Date("2022-05-23T00:00:00Z").getTime() / 1000);
+const startTime = Math.floor(new Date("2022-06-28T17:59:00").getTime() / 1000);
+const endTime = Math.floor(new Date("2022-06-28T18:00:00").getTime() / 1000);
 
 module.exports = (deployer) => {
     deployer.deploy(Voting, startTime, endTime).then(async (voting) => {
         for (const party of parties) {
-            await voting.addParty(party.name, party.symbol, "", "");
+            await voting.addParty(party.name, party.symbol);
         }
     });
 };
