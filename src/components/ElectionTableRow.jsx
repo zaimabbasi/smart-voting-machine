@@ -11,6 +11,7 @@ const ElectionTableRow = ({
     value,
     name,
     symbol,
+    voteCount,
     selection,
     canVote,
     handleSelection,
@@ -47,6 +48,11 @@ const ElectionTableRow = ({
             </TableCell>
             <TableCell>
                 <Typography variant="body1">{symbol}</Typography>
+            </TableCell>
+            <TableCell>
+                <Typography variant="body1">
+                    {voteCount ? voteCount : "-"}
+                </Typography>
             </TableCell>
         </TableRow>
     );

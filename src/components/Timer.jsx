@@ -25,11 +25,6 @@ const Timer = ({
         return () => clearInterval(timer.current);
     }, [startTime, endTime]);
 
-    const stopTimer = () => {
-        clearInterval(timer.current);
-        handleVotingOver();
-    };
-
     const calculateTimeLeft = () => {
         let timeLeft = {};
         let difference = 0;
@@ -39,7 +34,10 @@ const Timer = ({
 
         if (now < startTime) difference = startTime - now;
         else if (now < endTime) difference = endTime - now;
-        else stopTimer();
+        else {
+            clearInterval(timer.current);
+            handleVotingOver();
+        }
 
         timeLeft = {
             hours: Math.floor((difference / (60 * 60 * 1000)) % 24).toString(),

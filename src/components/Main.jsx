@@ -8,19 +8,23 @@ const Main = ({ account, contract }) => {
     const [nowTime, setNowTime] = React.useState(null);
     const [citizenVote, setCitizenVote] = React.useState(0);
     const [politicalParties, setPoliticalParties] = React.useState([]);
-    const [votingResults, setVotingResults] = React.useState([]);
+    const [electionResults, setElectionResults] = React.useState([]);
     const [startTime, setStartTime] = React.useState(null);
     const [endTime, setEndTime] = React.useState(null);
 
     React.useEffect(() => {
-        if (contract) getBlockchainData();
+        if (contract) {
+            getPoliticalParties();
+            getStartTime();
+            getEndTime();
+        }
     }, [contract]);
 
     React.useEffect(() => {
-        if (account && contract) getAccountData();
+        if (account && contract) getCitizenVote();
     }, [account, contract]);
 
-    const getBlockchainData = async () => {
+    const getPoliticalParties = async () => {
         await contract.methods
             .getPoliticalParties()
             .call()
@@ -31,7 +35,9 @@ const Main = ({ account, contract }) => {
             .catch((error) => {
                 console.log(error);
             });
+    };
 
+    const getStartTime = async () => {
         await contract.methods
             .startTime()
             .call()
@@ -43,7 +49,9 @@ const Main = ({ account, contract }) => {
             .catch((error) => {
                 console.log(error);
             });
+    };
 
+    const getEndTime = async () => {
         await contract.methods
             .endTime()
             .call()
@@ -57,7 +65,7 @@ const Main = ({ account, contract }) => {
             });
     };
 
-    const getAccountData = async () => {
+    const getCitizenVote = async () => {
         await contract.methods
             .getCitizenVote()
             .call({ from: account })
@@ -70,13 +78,13 @@ const Main = ({ account, contract }) => {
             });
     };
 
-    const handleVotingOver = async () => {
+    const getElectionResults = async () => {
         await contract.methods
             .getResults()
             .call()
             .then((response) => {
-                console.log("getRResults: ", response);
-                setVotingResults(votingResults);
+                console.log("getResults: ", response);
+                setElectionResults(response);
             })
             .catch((error) => {
                 console.log(error);
@@ -113,12 +121,13 @@ const Main = ({ account, contract }) => {
                     endTime={endTime}
                     nowTime={nowTime}
                     setNowTime={setNowTime}
-                    handleVotingOver={handleVotingOver}
+                    handleVotingOver={getElectionResults}
                 />
                 <ElectionTable
                     canVote={canVote()}
                     citizenVote={citizenVote}
                     politicalParties={politicalParties}
+                    electionResults={electionResults}
                     handleVote={handleVote}
                 />
             </Container>

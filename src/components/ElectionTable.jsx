@@ -20,6 +20,7 @@ const ElectionTable = ({
     canVote,
     citizenVote,
     politicalParties,
+    electionResults,
     handleVote,
 }) => {
     const [selection, setSelection] = React.useState(citizenVote);
@@ -49,6 +50,9 @@ const ElectionTable = ({
                         <TableCell>
                             <Typography variant="body1">Symbol</Typography>
                         </TableCell>
+                        <TableCell>
+                            <Typography variant="body1">Votes</Typography>
+                        </TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -58,6 +62,7 @@ const ElectionTable = ({
                             value={String(id + 1)}
                             name={politicalParty.name}
                             symbol={politicalParty.symbol}
+                            voteCount={electionResults[id]}
                             selection={selection}
                             canVote={canVote}
                             handleSelection={handleSelection}

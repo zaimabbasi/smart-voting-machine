@@ -38,8 +38,8 @@ const parties = [
     },
 ];
 
-const startTime = Math.floor(new Date("2022-06-28T17:59:00").getTime() / 1000);
-const endTime = Math.floor(new Date("2022-06-28T18:00:00").getTime() / 1000);
+const startTime = Math.floor(new Date("2022-06-30T00:00:00").getTime() / 1000);
+const endTime = Math.floor(new Date("2022-07-01T00:00:00").getTime() / 1000);
 
 module.exports = (deployer) => {
     deployer.deploy(Voting, startTime, endTime).then(async (voting) => {
